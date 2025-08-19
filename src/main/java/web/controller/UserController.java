@@ -2,12 +2,12 @@ package web.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/users")
@@ -22,33 +22,31 @@ public class UserController {
     @GetMapping
     public String listUsers(Model model) {
         model.addAttribute("users", userService.readAll());
+        model.addAttribute("newUser", new User());
         return "users";
     }
 
     @PostMapping("/create")
-    public String createUser(@RequestParam("name") String name,
-                             @RequestParam("age") int age,
-                             @RequestParam("email") String email) {
-        User user = new User();
-        user.setName(name);
-        user.setAge(age);
-        user.setEmail(email);
+    public String createUser(@ModelAttribute("newUser") @Valid User user,
+                             BindingResult bindingResult,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("users", userService.readAll());
+            return "users"; // остаемся на той же странице
+        }
         userService.create(user);
         return "redirect:/users";
     }
 
     @PostMapping("/update")
-    public String updateUser(@RequestParam("id") Long id,
-                             @RequestParam("name") String name,
-                             @RequestParam("age") int age,
-                             @RequestParam("email") String email) {
-        User user = userService.read(id);
-        if (user != null) {
-            user.setName(name);
-            user.setAge(age);
-            user.setEmail(email);
-            userService.update(user);
+    public String updateUser(@ModelAttribute("user") @Valid User user,
+                             BindingResult bindingResult,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("users", userService.readAll());
+            return "users"; // снова показываем ошибки
         }
+        userService.update(user);
         return "redirect:/users";
     }
 

@@ -7,52 +7,59 @@
 </head>
 <body>
 
-<h1>Users</h1>
+<h1>Пользователи</h1>
 
-<h2>Create users</h2>
+<h2>Создание пользователя</h2>
 
-<form th:method="POST" th:action="@{/users/create}">
+<form th:action="@{/users/create}" th:object="${newUser}" method="post">
     <label>
-        Name: <input type="text" name="name"/>
+        Имя: <input type="text" th:field="*{name}" required/>
+        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</div>
     </label><br>
     <label>
-        Age: <input type="number" name="age" required min="1" max="120"/>
+        Возраст: <input type="number" th:field="*{age}" min="1" max="120" required/>
+        <div th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
     </label><br>
     <label>
-        Email: <input type="email" name="email"/>
-    </label><br>
-    <br/>
+        Email: <input type="email" th:field="*{email}" required/>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+    </label><br><br>
     <input type="submit" value="Create"/>
 </form>
 
-<h2>Existing Users</h2>
+<h2>Существующие пользователи</h2>
 <table border="1">
     <tr>
-        <th>Name</th>
-        <th>Age</th>
+        <th>Имя</th>
+        <th>Возраст</th>
         <th>Email</th>
-        <th>Editing</th>
+        <th>Редактирование</th>
+        <th>Удаление</th>
     </tr>
     <tr th:each="user : ${users}">
         <td th:text="${user.name}"></td>
         <td th:text="${user.age}"></td>
         <td th:text="${user.email}"></td>
         <td>
-            <form th:action="@{/users/update}" method="post" style="display:inline">
-                <input type="hidden" name="id" th:value="${user.id}"/>
-                Name: <label>
-                <input type="text" name="name" th:value="${user.name}"/>
+            <form th:action="@{/users/update}" th:object="${user}" method="post" style="display:inline">
+                <input type="hidden" th:field="*{id}"/>
+                Имя: <label>
+                <input type="text" th:field="*{name}"/>
             </label>
-                Age: <label>
-                <input type="number" name="age" th:value="${user.age}" min="1" max="120"/>
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                Возраст: <label>
+                <input type="number" th:field="*{age}" min="1" max="120"/>
             </label>
+                <div th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
                 Email: <label>
-                <input type="email" name="email" th:value="${user.email}"/>
+                <input type="email" th:field="*{email}"/>
             </label>
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                 <input type="submit" value="Update"/>
             </form>
+        </td>
 
-            <form th:action="@{/users/delete}" method="post" style="display:inline">
+           <td> <form th:action="@{/users/delete}" method="post" style="display:inline">
                 <input type="hidden" name="id" th:value="${user.id}"/>
                 <input type="submit" value="Delete"/>
             </form>

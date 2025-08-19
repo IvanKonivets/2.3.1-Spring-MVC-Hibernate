@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+
+<h1>Пользователи</h1>
+
+<h2>Создание пользователя</h2>
+
+<form th:action="@{/users/create}" th:object="${newUser}" method="post">
+    <label>
+        Имя: <input type="text" th:field="*{name}" required/>
+        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</div>
+    </label><br>
+    <label>
+        Возраст: <input type="number" th:field="*{age}" min="1" max="120" required/>
+        <div th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
+    </label><br>
+    <label>
+        Email: <input type="email" th:field="*{email}" required/>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+    </label><br><br>
+    <input type="submit" value="Create"/>
+</form>
+
+<h2>Существующие пользователи</h2>
+<table border="1">
+    <tr>
+        <th>Имя</th>
+        <th>Возраст</th>
+        <th>Email</th>
+        <th>Редактирование</th>
+        <th>Удаление</th>
+    </tr>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.age}"></td>
+        <td th:text="${user.email}"></td>
+        <td>
+            <form th:action="@{/users/update}" th:object="${user}" method="post" style="display:inline">
+                <input type="hidden" th:field="*{id}"/>
+                Имя: <label>
+                <input type="text" th:field="*{name}"/>
+            </label>
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                Возраст: <label>
+                <input type="number" th:field="*{age}" min="1" max="120"/>
+            </label>
+                <div th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
+                Email: <label>
+                <input type="email" th:field="*{email}"/>
+            </label>
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                <input type="submit" value="Update"/>
+            </form>
+        </td>
+
+           <td> <form th:action="@{/users/delete}" method="post" style="display:inline">
+                <input type="hidden" name="id" th:value="${user.id}"/>
+                <input type="submit" value="Delete"/>
+            </form>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
