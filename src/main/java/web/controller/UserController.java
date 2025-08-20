@@ -22,32 +22,45 @@ public class UserController {
     @GetMapping
     public String listUsers(Model model) {
         model.addAttribute("users", userService.readAll());
-        model.addAttribute("newUser", new User());
         return "users";
+    }
+
+    @GetMapping("/new")
+    public String newUserForm(Model model) {
+        model.addAttribute("newUser", new User());
+        return "new";
     }
 
     @PostMapping("/create")
     public String createUser(@ModelAttribute("newUser") @Valid User user,
-                             BindingResult bindingResult,
-                             Model model) {
+                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("users", userService.readAll());
-            return "users"; // остаемся на той же странице
+            return "new";
         }
         userService.create(user);
         return "redirect:/users";
     }
 
+    @GetMapping("/update")
+    public String editUserForm(@RequestParam("id") Long id, Model model) {
+        model.addAttribute("user", userService.read(id));
+        return "update";
+    }
+
     @PostMapping("/update")
     public String updateUser(@ModelAttribute("user") @Valid User user,
-                             BindingResult bindingResult,
-                             Model model) {
+                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("users", userService.readAll());
-            return "users"; // снова показываем ошибки
+            return "update";
         }
         userService.update(user);
         return "redirect:/users";
+    }
+
+    @GetMapping("/show")
+    public String showUser(@RequestParam("id") Long id, Model model) {
+        model.addAttribute("user", userService.read(id));
+        return "show";
     }
 
     @PostMapping("/delete")
